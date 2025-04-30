@@ -28,20 +28,21 @@ type Model struct {
     exerciseKey string
     exerciseCount int 
 	exerciseStep int 
+    starved bool
 }
 
 func initialModel() Model {
 	rand.Seed(time.Now().UnixNano())
 
 	initialWeight := rand.Intn(5) + 1 
-	catNames := []string{"Whiskers", "Mittens", "Fluffy", "Shadow", "Ginger"}
+	catNames := []string{"Whiskers", "Mittens", "Fluffy", "Shadow", "Ginger", "Simba", "Luna", "Oliver", "Bella", "Charlie"}
 	catName := catNames[rand.Intn(len(catNames))]
 
 	foods := []Food{
 		{name: "Fish", calorieValue: 2, key: "a"},
 		{name: "Chicken", calorieValue: 3, key: "s"},
 		{name: "Beef", calorieValue: 4, key: "d"},
-		{name: "Vegetables", calorieValue: -2, key: "f"},
+		{name: "Keso extra protein", calorieValue: -2, key: "f"},
 		{name: "Treats", calorieValue: 2, key: "g"},
 		{name: "Catnip", calorieValue: 1, key: "h"},
 	}
@@ -56,6 +57,7 @@ func initialModel() Model {
         exerciseKey: "jk",
         exerciseCount: 0,
 		exerciseStep: 0,
+        starved: false,
     }
 }
 
@@ -102,6 +104,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
+    case m.starved:
+        m.catWeight <= 0 {
+            m.catWeight = 0
+            m.starved = true;
+        }
+        m.question = "Your cat has starved to death! Press 'q' to quit."
+        return m, nil
+
         case msg.String() == "e" && m.catWeight >= 20:
             m.exercising = true
             m.exerciseCount = 0
@@ -109,8 +119,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             m.err = nil
             return m, nil
 
-        default:
-            
+        default:  
             for _, food := range m.foods {
                 if msg.String() == food.key {
                     if m.catWeight >= 20 { 
